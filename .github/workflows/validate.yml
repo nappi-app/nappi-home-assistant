@@ -7,9 +7,13 @@ on:
     - cron: "17 6 * * 1"
   workflow_dispatch:
 
+permissions: {}
+
 jobs:
   hassfest:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: home-assistant/actions/hassfest@master
@@ -23,6 +27,8 @@ jobs:
 
   tests:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-python@v6
