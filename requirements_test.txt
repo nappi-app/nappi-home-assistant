@@ -1,0 +1,2 @@
+# Python 3.14. Pins Home Assistant 2026.10.2.
+pytest-homeassistant-custom-component==0.13.373

@@ -1,0 +1,178 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Connect nappi",
+        "description": "Paste a connection key. Create one at [{keys_url}]({keys_url}) (nappi Premium). A key is shown only once, when you create it.",
+        "data": {
+          "api_key": "Connection key"
+        },
+        "data_description": {
+          "api_key": "Starts with nappi_"
+        }
+      },
+      "baby": {
+        "title": "Choose a baby",
+        "description": "This key can see more than one baby. Pick one here, then add the integration again for each other baby.",
+        "data": {
+          "baby_id": "Baby"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Reconnect {baby}",
+        "description": "The connection key for {baby} stopped working. It may have expired or been revoked, or its owner is no longer a caregiver. Create a new key at [{keys_url}]({keys_url}) and paste it here.",
+        "data": {
+          "api_key": "Connection key"
+        },
+        "data_description": {
+          "api_key": "Starts with nappi_"
+        }
+      }
+    },
+    "error": {
+      "invalid_key_format": "That doesn't look like a connection key. It starts with nappi_ followed by 48 letters and numbers.",
+      "invalid_auth": "This key isn't valid, was revoked, or has expired.",
+      "premium_required": "This key's household doesn't have nappi Premium. The API is part of Premium.",
+      "rate_limited": "Too many requests with this key. Wait a minute and try again.",
+      "cannot_connect": "Couldn't reach nappi. Check the connection and try again.",
+      "no_babies": "This key's household has no babies yet. Add one in the nappi app first.",
+      "baby_not_in_household": "This key belongs to a different household. Use a key from the household this baby is in.",
+      "unknown": "Something unexpected went wrong."
+    },
+    "abort": {
+      "already_configured": "Every baby this key can see is already set up.",
+      "reauth_successful": "The new key works. nappi is connected again."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "nappi options",
+        "description": "The unit for the bottle amount.",
+        "data": {
+          "bottle_unit": "Bottle unit"
+        }
+      }
+    }
+  },
+  "selector": {
+    "bottle_unit": {
+      "options": {
+        "ml": "Milliliters (mL)",
+        "oz": "Ounces (fl. oz.)"
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "diaper_wet": {
+        "name": "Log wet diaper"
+      },
+      "diaper_dirty": {
+        "name": "Log dirty diaper"
+      },
+      "diaper_mixed": {
+        "name": "Log mixed diaper"
+      },
+      "log_bottle": {
+        "name": "Log bottle"
+      }
+    },
+    "number": {
+      "bottle_amount": {
+        "name": "Bottle amount"
+      }
+    },
+    "select": {
+      "bottle_contents": {
+        "name": "Bottle contents",
+        "state": {
+          "unspecified": "Not specified",
+          "breast_milk": "Breast milk",
+          "formula": "Formula",
+          "tube_feeding": "Tube feeding",
+          "cow_milk": "Cow's milk",
+          "goat_milk": "Goat's milk",
+          "soy_milk": "Soy milk",
+          "other": "Other"
+        }
+      }
+    },
+    "sensor": {
+      "last_sleep": {
+        "name": "Last sleep"
+      },
+      "last_nursing": {
+        "name": "Last nursing"
+      },
+      "last_bottle": {
+        "name": "Last bottle"
+      },
+      "last_diaper": {
+        "name": "Last diaper"
+      },
+      "last_pumping": {
+        "name": "Last pumping"
+      },
+      "last_potty": {
+        "name": "Last potty"
+      },
+      "last_solids": {
+        "name": "Last solids"
+      },
+      "last_activity": {
+        "name": "Last activity"
+      },
+      "last_growth": {
+        "name": "Last growth measurement"
+      },
+      "last_medication": {
+        "name": "Last medicine"
+      }
+    },
+    "switch": {
+      "sleep_timer": {
+        "name": "Sleep timer"
+      },
+      "nursing_timer": {
+        "name": "Nursing timer"
+      },
+      "pumping_timer": {
+        "name": "Pumping timer"
+      }
+    }
+  },
+  "exceptions": {
+    "auth_failed": {
+      "message": "The nappi connection key stopped working. Paste a new one to reconnect."
+    },
+    "premium_required": {
+      "message": "The nappi API needs Premium. Renew it in the nappi app."
+    },
+    "baby_not_found": {
+      "message": "nappi can't find this baby with the current connection key."
+    },
+    "rate_limited": {
+      "message": "nappi is limiting requests from this key. Try again in {seconds} seconds."
+    },
+    "update_failed": {
+      "message": "Couldn't update from nappi: {error}"
+    },
+    "request_failed": {
+      "message": "nappi didn't accept the request: {error}"
+    },
+    "no_bottle_amount": {
+      "message": "Set a bottle amount first."
+    }
+  },
+  "issues": {
+    "premium_required": {
+      "title": "nappi Premium has ended for {baby}",
+      "description": "The nappi API is part of Premium, so Home Assistant can't log or read entries for {baby} right now. Renew Premium in the nappi app and the integration reconnects by itself within a minute."
+    },
+    "baby_not_found": {
+      "title": "nappi can't find {baby}",
+      "description": "The connection key can no longer see {baby}. The baby may have been removed, or the key's owner may have moved to another household. Delete this entry, or add the integration again with a key from the right household."
+    }
+  }
+}

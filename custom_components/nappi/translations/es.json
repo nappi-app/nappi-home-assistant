@@ -1,0 +1,178 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "Conectar nappi",
+        "description": "Pega una clave de conexión. Créala en [{keys_url}]({keys_url}) (nappi Premium). La clave se muestra una sola vez, al crearla.",
+        "data": {
+          "api_key": "Clave de conexión"
+        },
+        "data_description": {
+          "api_key": "Empieza por nappi_"
+        }
+      },
+      "baby": {
+        "title": "Elige un bebé",
+        "description": "Esta clave puede ver más de un bebé. Elige uno aquí y luego vuelve a añadir la integración para cada uno de los demás.",
+        "data": {
+          "baby_id": "Bebé"
+        }
+      },
+      "reauth_confirm": {
+        "title": "Volver a conectar a {baby}",
+        "description": "La clave de conexión de {baby} dejó de funcionar. Puede que haya caducado o se haya revocado, o que su dueño ya no sea cuidador. Crea una nueva en [{keys_url}]({keys_url}) y pégala aquí.",
+        "data": {
+          "api_key": "Clave de conexión"
+        },
+        "data_description": {
+          "api_key": "Empieza por nappi_"
+        }
+      }
+    },
+    "error": {
+      "invalid_key_format": "Eso no parece una clave de conexión. Empieza por nappi_ seguido de 48 letras y números.",
+      "invalid_auth": "Esta clave no es válida, se revocó o caducó.",
+      "premium_required": "El hogar de esta clave no tiene nappi Premium. La API es parte de Premium.",
+      "rate_limited": "Demasiadas solicitudes con esta clave. Espera un minuto y vuelve a intentarlo.",
+      "cannot_connect": "No se pudo conectar con nappi. Revisa la conexión y vuelve a intentarlo.",
+      "no_babies": "El hogar de esta clave todavía no tiene bebés. Añade uno primero en la app nappi.",
+      "baby_not_in_household": "Esta clave es de otro hogar. Usa una clave del hogar donde está este bebé.",
+      "unknown": "Ocurrió un error inesperado."
+    },
+    "abort": {
+      "already_configured": "Todos los bebés que ve esta clave ya están configurados.",
+      "reauth_successful": "La nueva clave funciona. nappi vuelve a estar conectado."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Opciones de nappi",
+        "description": "La unidad para la cantidad del biberón.",
+        "data": {
+          "bottle_unit": "Unidad del biberón"
+        }
+      }
+    }
+  },
+  "selector": {
+    "bottle_unit": {
+      "options": {
+        "ml": "Mililitros (mL)",
+        "oz": "Onzas (fl. oz.)"
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "diaper_wet": {
+        "name": "Registrar pañal con pipí"
+      },
+      "diaper_dirty": {
+        "name": "Registrar pañal con popó"
+      },
+      "diaper_mixed": {
+        "name": "Registrar pañal mixto"
+      },
+      "log_bottle": {
+        "name": "Registrar biberón"
+      }
+    },
+    "number": {
+      "bottle_amount": {
+        "name": "Cantidad del biberón"
+      }
+    },
+    "select": {
+      "bottle_contents": {
+        "name": "Contenido del biberón",
+        "state": {
+          "unspecified": "Sin especificar",
+          "breast_milk": "Leche materna",
+          "formula": "Fórmula",
+          "tube_feeding": "Alimentación por sonda",
+          "cow_milk": "Leche de vaca",
+          "goat_milk": "Leche de cabra",
+          "soy_milk": "Leche de soya",
+          "other": "Otro"
+        }
+      }
+    },
+    "sensor": {
+      "last_sleep": {
+        "name": "Último sueño"
+      },
+      "last_nursing": {
+        "name": "Última lactancia"
+      },
+      "last_bottle": {
+        "name": "Último biberón"
+      },
+      "last_diaper": {
+        "name": "Último pañal"
+      },
+      "last_pumping": {
+        "name": "Última extracción"
+      },
+      "last_potty": {
+        "name": "Última bacinica"
+      },
+      "last_solids": {
+        "name": "Últimos sólidos"
+      },
+      "last_activity": {
+        "name": "Última actividad"
+      },
+      "last_growth": {
+        "name": "Última medición de crecimiento"
+      },
+      "last_medication": {
+        "name": "Última medicina"
+      }
+    },
+    "switch": {
+      "sleep_timer": {
+        "name": "Temporizador de sueño"
+      },
+      "nursing_timer": {
+        "name": "Temporizador de lactancia"
+      },
+      "pumping_timer": {
+        "name": "Temporizador de extracción"
+      }
+    }
+  },
+  "exceptions": {
+    "auth_failed": {
+      "message": "La clave de conexión de nappi dejó de funcionar. Pega una nueva para volver a conectar."
+    },
+    "premium_required": {
+      "message": "La API de nappi necesita Premium. Renuévalo en la app nappi."
+    },
+    "baby_not_found": {
+      "message": "nappi no encuentra a este bebé con la clave de conexión actual."
+    },
+    "rate_limited": {
+      "message": "nappi está limitando las solicitudes de esta clave. Vuelve a intentarlo en {seconds} segundos."
+    },
+    "update_failed": {
+      "message": "No se pudo actualizar desde nappi: {error}"
+    },
+    "request_failed": {
+      "message": "nappi no aceptó la solicitud: {error}"
+    },
+    "no_bottle_amount": {
+      "message": "Primero define la cantidad del biberón."
+    }
+  },
+  "issues": {
+    "premium_required": {
+      "title": "nappi Premium terminó para {baby}",
+      "description": "La API de nappi es parte de Premium, así que Home Assistant no puede registrar ni leer datos de {baby} por ahora. Renueva Premium en la app nappi y la integración se reconecta sola en menos de un minuto."
+    },
+    "baby_not_found": {
+      "title": "nappi no encuentra a {baby}",
+      "description": "La clave de conexión ya no ve a {baby}. Puede que se haya eliminado al bebé o que el dueño de la clave se haya cambiado de hogar. Elimina esta entrada o vuelve a añadir la integración con una clave del hogar correcto."
+    }
+  }
+}

@@ -1,0 +1,178 @@
+{
+  "config": {
+    "step": {
+      "user": {
+        "title": "nappi verbinden",
+        "description": "Füge einen Verbindungsschlüssel ein. Erstelle einen unter [{keys_url}]({keys_url}) (nappi Premium). Der Schlüssel wird nur einmal angezeigt, beim Erstellen.",
+        "data": {
+          "api_key": "Verbindungsschlüssel"
+        },
+        "data_description": {
+          "api_key": "Beginnt mit nappi_"
+        }
+      },
+      "baby": {
+        "title": "Baby auswählen",
+        "description": "Dieser Schlüssel sieht mehr als ein Baby. Wähle hier eines aus und füge die Integration dann für jedes weitere Baby erneut hinzu.",
+        "data": {
+          "baby_id": "Baby"
+        }
+      },
+      "reauth_confirm": {
+        "title": "{baby} neu verbinden",
+        "description": "Der Verbindungsschlüssel für {baby} funktioniert nicht mehr. Er ist vielleicht abgelaufen oder wurde widerrufen, oder sein Besitzer ist keine Betreuungsperson mehr. Erstelle einen neuen unter [{keys_url}]({keys_url}) und füge ihn hier ein.",
+        "data": {
+          "api_key": "Verbindungsschlüssel"
+        },
+        "data_description": {
+          "api_key": "Beginnt mit nappi_"
+        }
+      }
+    },
+    "error": {
+      "invalid_key_format": "Das sieht nicht wie ein Verbindungsschlüssel aus. Er beginnt mit nappi_, gefolgt von 48 Buchstaben und Ziffern.",
+      "invalid_auth": "Dieser Schlüssel ist ungültig, wurde widerrufen oder ist abgelaufen.",
+      "premium_required": "Der Haushalt dieses Schlüssels hat kein nappi Premium. Die API gehört zu Premium.",
+      "rate_limited": "Zu viele Anfragen mit diesem Schlüssel. Warte eine Minute und versuche es erneut.",
+      "cannot_connect": "nappi ist nicht erreichbar. Prüfe die Verbindung und versuche es erneut.",
+      "no_babies": "Im Haushalt dieses Schlüssels gibt es noch kein Baby. Füge zuerst eines in der nappi-App hinzu.",
+      "baby_not_in_household": "Dieser Schlüssel gehört zu einem anderen Haushalt. Verwende einen Schlüssel aus dem Haushalt dieses Babys.",
+      "unknown": "Ein unerwarteter Fehler ist aufgetreten."
+    },
+    "abort": {
+      "already_configured": "Alle Babys, die dieser Schlüssel sieht, sind bereits eingerichtet.",
+      "reauth_successful": "Der neue Schlüssel funktioniert. nappi ist wieder verbunden."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "nappi-Optionen",
+        "description": "Die Einheit für die Fläschchenmenge.",
+        "data": {
+          "bottle_unit": "Fläschchen-Einheit"
+        }
+      }
+    }
+  },
+  "selector": {
+    "bottle_unit": {
+      "options": {
+        "ml": "Milliliter (mL)",
+        "oz": "Unzen (fl. oz.)"
+      }
+    }
+  },
+  "entity": {
+    "button": {
+      "diaper_wet": {
+        "name": "Pipi-Windel erfassen"
+      },
+      "diaper_dirty": {
+        "name": "Kacka-Windel erfassen"
+      },
+      "diaper_mixed": {
+        "name": "Gemischte Windel erfassen"
+      },
+      "log_bottle": {
+        "name": "Fläschchen erfassen"
+      }
+    },
+    "number": {
+      "bottle_amount": {
+        "name": "Fläschchenmenge"
+      }
+    },
+    "select": {
+      "bottle_contents": {
+        "name": "Fläschcheninhalt",
+        "state": {
+          "unspecified": "Nicht angegeben",
+          "breast_milk": "Muttermilch",
+          "formula": "Säuglingsmilch",
+          "tube_feeding": "Sondennahrung",
+          "cow_milk": "Kuhmilch",
+          "goat_milk": "Ziegenmilch",
+          "soy_milk": "Sojamilch",
+          "other": "Sonstiges"
+        }
+      }
+    },
+    "sensor": {
+      "last_sleep": {
+        "name": "Letzter Schlaf"
+      },
+      "last_nursing": {
+        "name": "Letztes Stillen"
+      },
+      "last_bottle": {
+        "name": "Letztes Fläschchen"
+      },
+      "last_diaper": {
+        "name": "Letzte Windel"
+      },
+      "last_pumping": {
+        "name": "Letztes Abpumpen"
+      },
+      "last_potty": {
+        "name": "Letzter Töpfchengang"
+      },
+      "last_solids": {
+        "name": "Letzte Beikost"
+      },
+      "last_activity": {
+        "name": "Letzte Aktivität"
+      },
+      "last_growth": {
+        "name": "Letzte Wachstumsmessung"
+      },
+      "last_medication": {
+        "name": "Letztes Medikament"
+      }
+    },
+    "switch": {
+      "sleep_timer": {
+        "name": "Schlaf-Timer"
+      },
+      "nursing_timer": {
+        "name": "Still-Timer"
+      },
+      "pumping_timer": {
+        "name": "Abpump-Timer"
+      }
+    }
+  },
+  "exceptions": {
+    "auth_failed": {
+      "message": "Der nappi-Verbindungsschlüssel funktioniert nicht mehr. Füge einen neuen ein, um wieder zu verbinden."
+    },
+    "premium_required": {
+      "message": "Die nappi-API erfordert Premium. Verlängere es in der nappi-App."
+    },
+    "baby_not_found": {
+      "message": "nappi findet dieses Baby mit dem aktuellen Verbindungsschlüssel nicht."
+    },
+    "rate_limited": {
+      "message": "nappi begrenzt die Anfragen dieses Schlüssels. Versuche es in {seconds} Sekunden erneut."
+    },
+    "update_failed": {
+      "message": "Aktualisierung von nappi fehlgeschlagen: {error}"
+    },
+    "request_failed": {
+      "message": "nappi hat die Anfrage nicht angenommen: {error}"
+    },
+    "no_bottle_amount": {
+      "message": "Lege zuerst die Fläschchenmenge fest."
+    }
+  },
+  "issues": {
+    "premium_required": {
+      "title": "nappi Premium für {baby} ist abgelaufen",
+      "description": "Die nappi-API gehört zu Premium, deshalb kann Home Assistant für {baby} gerade nichts erfassen oder lesen. Verlängere Premium in der nappi-App, dann verbindet sich die Integration innerhalb einer Minute von selbst wieder."
+    },
+    "baby_not_found": {
+      "title": "nappi findet {baby} nicht",
+      "description": "Der Verbindungsschlüssel sieht {baby} nicht mehr. Das Baby wurde vielleicht entfernt, oder der Besitzer des Schlüssels ist in einen anderen Haushalt gewechselt. Lösche diesen Eintrag oder füge die Integration mit einem Schlüssel aus dem richtigen Haushalt erneut hinzu."
+    }
+  }
+}

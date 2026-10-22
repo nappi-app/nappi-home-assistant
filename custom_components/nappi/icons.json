@@ -1,0 +1,33 @@
+{
+  "entity": {
+    "button": {
+      "diaper_wet": { "default": "mdi:water" },
+      "diaper_dirty": { "default": "mdi:emoticon-poop" },
+      "diaper_mixed": { "default": "mdi:water-plus" },
+      "log_bottle": { "default": "mdi:baby-bottle-outline" }
+    },
+    "number": {
+      "bottle_amount": { "default": "mdi:baby-bottle-outline" }
+    },
+    "select": {
+      "bottle_contents": { "default": "mdi:baby-bottle" }
+    },
+    "switch": {
+      "sleep_timer": { "default": "mdi:sleep-off", "state": { "on": "mdi:sleep" } },
+      "nursing_timer": { "default": "mdi:mother-nurse" },
+      "pumping_timer": { "default": "mdi:timer-outline", "state": { "on": "mdi:timer" } }
+    },
+    "sensor": {
+      "last_sleep": { "default": "mdi:sleep" },
+      "last_nursing": { "default": "mdi:mother-nurse" },
+      "last_bottle": { "default": "mdi:baby-bottle-outline" },
+      "last_diaper": { "default": "mdi:human-baby-changing-table" },
+      "last_pumping": { "default": "mdi:timer-outline" },
+      "last_potty": { "default": "mdi:toilet" },
+      "last_solids": { "default": "mdi:food-apple" },
+      "last_activity": { "default": "mdi:toy-brick" },
+      "last_growth": { "default": "mdi:human-male-height" },
+      "last_medication": { "default": "mdi:medication" }
+    }
+  }
+}
