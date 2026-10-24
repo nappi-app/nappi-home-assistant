@@ -52,7 +52,7 @@ def baby_issue_id(entry_id: str) -> str:
 
 
 class NappiCoordinator(DataUpdateCoordinator[NappiData]):
-    """Polls the latest entries and the running timers once a minute."""
+    """Polls the running timers and the latest entries every two minutes, in one request."""
 
     config_entry: NappiConfigEntry
 
@@ -72,8 +72,7 @@ class NappiCoordinator(DataUpdateCoordinator[NappiData]):
     async def _async_update_data(self) -> NappiData:
         entry_id = self.config_entry.entry_id
         try:
-            latest_result = await self.client.async_get_latest(self.baby_id, self._etag)
-            timers = await self.client.async_get_timers(self.baby_id)
+            result = await self.client.async_get_status(self.baby_id, self._etag)
         except NappiAuthError as err:
             raise ConfigEntryAuthFailed(
                 translation_domain=DOMAIN,
@@ -120,19 +119,21 @@ class NappiCoordinator(DataUpdateCoordinator[NappiData]):
         ir.async_delete_issue(self.hass, DOMAIN, premium_issue_id(entry_id))
         ir.async_delete_issue(self.hass, DOMAIN, baby_issue_id(entry_id))
 
-        previous = self.data or NappiData()
-        if latest_result.entries is None:
-            latest = previous.latest
-        else:
-            latest = latest_result.entries
-        self._etag = latest_result.etag
+        self._etag = result.etag
+        if result.not_modified:
+            return self.data or NappiData()
         return NappiData(
-            latest=latest,
-            timers={timer["type"]: timer for timer in timers if isinstance(timer, dict) and "type" in timer},
+            latest=result.latest or {},
+            timers={
+                timer["type"]: timer for timer in result.timers or [] if isinstance(timer, dict) and "type" in timer
+            },
         )
 
     def set_timer(self, timer_type: str, timer: dict[str, Any] | None) -> None:
         """Apply a timer change we just made, without waiting for the next poll."""
+        # The local data no longer matches the ETag, so the next poll must not
+        # accept a 304 for it (a timer discarded on the phone saves no entry).
+        self._etag = None
         current = self.data or NappiData()
         timers = dict(current.timers)
         if timer is None:

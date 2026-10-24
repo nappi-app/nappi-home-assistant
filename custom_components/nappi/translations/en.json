@@ -168,7 +168,7 @@
   "issues": {
     "premium_required": {
       "title": "nappi Premium has ended for {baby}",
-      "description": "The nappi API is part of Premium, so Home Assistant can't log or read entries for {baby} right now. Renew Premium in the nappi app and the integration reconnects by itself within a minute."
+      "description": "The nappi API is part of Premium, so Home Assistant can't log or read entries for {baby} right now. Renew Premium in the nappi app and the integration reconnects by itself within two minutes."
     },
     "baby_not_found": {
       "title": "nappi can't find {baby}",

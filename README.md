@@ -23,9 +23,9 @@ Entity names are translated into English, Spanish, Portuguese, Italian, French a
 
 ### HACS
 
-[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=nappi-app&repository=nappi-home-assistant&category=integration)
+nappi is in the HACS default store. In HACS, search for **nappi**, open it, choose **Download**, then restart Home Assistant. Or open it straight from here:
 
-Or, in HACS, open the menu, choose **Custom repositories**, add `https://github.com/nappi-app/nappi-home-assistant` with the **Integration** type, then install **nappi** and restart Home Assistant.
+[![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=nappi-app&repository=nappi-home-assistant&category=integration)
 
 ### By hand
 
@@ -44,18 +44,20 @@ For twins or siblings, add the integration again with the same key and pick the 
 
 ## Voice control with Google Home or Alexa
 
-The switches and buttons can be exposed to a voice assistant through Home Assistant, for example with Home Assistant Cloud (**Settings > Voice assistants > Expose**). Then "Hey Google, turn on Phoebe sleep timer" starts the sleep timer, and activating "Phoebe log wet diaper" logs a diaper. Names follow your Home Assistant entity names, so rename them to whatever is easiest to say.
+The switches and buttons can be exposed to a voice assistant through Home Assistant. Then "Hey Google, turn on Phoebe Sleep timer" starts the sleep timer, and "Hey Google, activate Phoebe Log wet diaper" logs a diaper. Names follow your Home Assistant entity names, so rename them to whatever is easiest to say.
+
+For Google Home there are three ways to connect: Home Assistant Cloud (easiest, paid), a Matter bridge (free and local, needs a Google hub) or Home Assistant's own Google Assistant setup (free, technical). The step-by-step guide is at [nappi.app/smart-home/google-home](https://nappi.app/smart-home/google-home).
 
 ## Polling and limits
 
-The API allows 12 reads and 30 writes a minute per key, and asks that you poll no more than once a minute. This integration reads once a minute per baby (two requests: latest entries and running timers) and sends the last ETag so an unchanged answer is a small 304. After you press a button or stop a timer it reads once more, so the sensors update straight away. If the server says to slow down, it waits as long as the `Retry-After` header asks before polling again.
+The API allows 12 reads and 30 writes a minute per key, and asks that you poll no more than once a minute. This integration makes one request per baby every two minutes (`GET /status`, which returns the running timers and the latest entries together) and sends the last ETag, so an unchanged answer is a small 304. After you press a button or turn a timer on or off it reads again at once, so the sensors update straight away; a change made on a phone, a watch or Alexa shows up within two minutes. If the server says to slow down, it waits as long as the `Retry-After` header asks before polling again.
 
 Buttons stay available even if the last poll failed, so a slow or rate-limited read never stops you logging. Every bottle and diaper press carries its own `Idempotency-Key`, and a press that loses its connection is retried once with the same key, so it is never logged twice.
 
 ## When something goes wrong
 
 - **Key expired or revoked, or its owner left the household:** Home Assistant asks you to reconnect. Create a new key and paste it. Every baby set up with the old key gets the new one.
-- **Premium ended:** a repair appears under **Settings > Repairs**. Renew Premium in the nappi app and the integration reconnects by itself within a minute.
+- **Premium ended:** a repair appears under **Settings > Repairs**. Renew Premium in the nappi app and the integration reconnects by itself within two minutes.
 - **Baby removed from the household:** a repair appears. Delete the entry, or add the integration again with a key from the right household.
 
 ## Development

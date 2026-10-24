@@ -168,7 +168,7 @@
   "issues": {
     "premium_required": {
       "title": "nappi Premium für {baby} ist abgelaufen",
-      "description": "Die nappi-API gehört zu Premium, deshalb kann Home Assistant für {baby} gerade nichts erfassen oder lesen. Verlängere Premium in der nappi-App, dann verbindet sich die Integration innerhalb einer Minute von selbst wieder."
+      "description": "Die nappi-API gehört zu Premium, deshalb kann Home Assistant für {baby} gerade nichts erfassen oder lesen. Verlängere Premium in der nappi-App, dann verbindet sich die Integration innerhalb von zwei Minuten von selbst wieder."
     },
     "baby_not_found": {
       "title": "nappi findet {baby} nicht",

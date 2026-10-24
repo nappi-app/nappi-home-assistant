@@ -200,13 +200,13 @@ async def test_timer_switch_mirrors_and_controls_the_timer(
     assert hass.states.get("switch.phoebe_sleep_timer").state == STATE_OFF
     assert len(nappi.calls_to("stop:sleep")) == 1
 
-    reads = len(nappi.calls_to("timers"))
+    reads = len(nappi.calls_to("status"))
     await hass.services.async_call(
         SWITCH_DOMAIN, SERVICE_TURN_ON, {ATTR_ENTITY_ID: "switch.phoebe_nursing_timer"}, blocking=True
     )
     assert hass.states.get("switch.phoebe_nursing_timer").state == STATE_ON
     # Starting uses the server's answer instead of spending a read.
-    assert len(nappi.calls_to("timers")) == reads
+    assert len(nappi.calls_to("status")) == reads
 
 
 async def test_stopping_a_timer_someone_else_stopped(

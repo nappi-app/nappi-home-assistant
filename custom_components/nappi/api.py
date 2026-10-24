@@ -67,11 +67,17 @@ class Baby:
 
 
 @dataclass(slots=True)
-class LatestResult:
-    """Result of reading the latest entries. ``entries`` is None on 304 Not Modified."""
+class StatusResult:
+    """Running timers and latest entries. Both are None on 304 Not Modified,
+    which the server only sends while no timer is running."""
 
-    entries: dict[str, Any] | None
+    timers: list[dict[str, Any]] | None
+    latest: dict[str, Any] | None
     etag: str | None
+
+    @property
+    def not_modified(self) -> bool:
+        return self.latest is None
 
 
 def _retry_after(headers: Any) -> int:
@@ -162,19 +168,24 @@ class NappiClient:
             for item in body or []
         ]
 
-    async def async_get_latest(self, baby_id: str, etag: str | None = None) -> LatestResult:
-        """Read the newest entry of each type. Sends If-None-Match when an ETag is known."""
+    async def async_get_status(self, baby_id: str, etag: str | None = None) -> StatusResult:
+        """Read the running timers and the newest entry of each type in one request.
+
+        Sends If-None-Match when an ETag is known.
+        """
         headers = {"If-None-Match": etag} if etag else None
-        status, body, resp_headers = await self._request("GET", f"/babies/{baby_id}/entries/latest", headers=headers)
+        status, body, resp_headers = await self._request("GET", f"/babies/{baby_id}/status", headers=headers)
         new_etag = resp_headers.get("ETag") if resp_headers else None
         if status == 304:
-            return LatestResult(entries=None, etag=new_etag or etag)
-        return LatestResult(entries=body if isinstance(body, dict) else {}, etag=new_etag)
-
-    async def async_get_timers(self, baby_id: str) -> list[dict[str, Any]]:
-        """Read the timers running now."""
-        _, body, _ = await self._request("GET", f"/babies/{baby_id}/timers")
-        return body if isinstance(body, list) else []
+            return StatusResult(timers=None, latest=None, etag=new_etag or etag)
+        body = body if isinstance(body, dict) else {}
+        timers = body.get("timers")
+        latest = body.get("latest")
+        return StatusResult(
+            timers=timers if isinstance(timers, list) else [],
+            latest=latest if isinstance(latest, dict) else {},
+            etag=new_etag,
+        )
 
     async def async_log_entry(self, baby_id: str, entry: dict[str, Any]) -> dict[str, Any]:
         """Log a finished entry.

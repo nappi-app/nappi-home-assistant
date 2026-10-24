@@ -168,7 +168,7 @@
   "issues": {
     "premium_required": {
       "title": "O nappi Premium de {baby} terminou",
-      "description": "A API do nappi faz parte do Premium, então o Home Assistant não consegue registrar nem ler dados de {baby} agora. Renove o Premium no app nappi e a integração se reconecta sozinha em até um minuto."
+      "description": "A API do nappi faz parte do Premium, então o Home Assistant não consegue registrar nem ler dados de {baby} agora. Renove o Premium no app nappi e a integração se reconecta sozinha em até dois minutos."
     },
     "baby_not_found": {
       "title": "O nappi não encontra {baby}",

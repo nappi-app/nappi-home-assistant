@@ -3,6 +3,8 @@
 from __future__ import annotations
 
 from collections.abc import Generator
+import hashlib
+import json
 import re
 from typing import Any
 
@@ -85,7 +87,15 @@ class FakeNappi:
 
     @property
     def etag(self) -> str:
-        return f'W/"r{self.revision}"'
+        """Like the server's: the entry revision plus the timers' state."""
+        timers = json.dumps(sorted(self.timers, key=lambda t: t["type"]), sort_keys=True)
+        return f'W/"r{self.revision}-{hashlib.sha256(timers.encode()).hexdigest()[:8]}"'
+
+    @property
+    def cacheable(self) -> bool:
+        """A running timer's elapsed time changes every second, so the server
+        only answers 304 while every timer is paused or none is running."""
+        return all(t["paused"] for t in self.timers)
 
     def fail(self, route: str, status: int, code: str | None = None, headers: dict[str, str] | None = None) -> None:
         self.failures.setdefault(route, []).append((status, code, headers or {}))
@@ -101,10 +111,8 @@ class FakeNappi:
         parts = path.removeprefix("/v1/").split("/")
         if parts == ["babies"]:
             return "babies"
-        if parts[2:] == ["entries", "latest"]:
-            return "latest"
-        if parts[2:] == ["timers"]:
-            return "timers"
+        if parts[2:] == ["status"]:
+            return "status"
         if parts[2:] == ["entries"]:
             return "log"
         if len(parts) == 5 and parts[2] == "timers":
@@ -131,12 +139,11 @@ class FakeNappi:
 
         if route == "babies":
             return self._respond(method, url, 200, self.babies)
-        if route == "latest":
-            if headers.get("If-None-Match") == self.etag:
+        if route == "status":
+            if self.cacheable and headers.get("If-None-Match") == self.etag:
                 return self._respond(method, url, 304, headers={"ETag": self.etag})
-            return self._respond(method, url, 200, self.latest, {"ETag": self.etag})
-        if route == "timers":
-            return self._respond(method, url, 200, self.timers)
+            body = {"timers": self.timers, "latest": self.latest}
+            return self._respond(method, url, 200, body, {"ETag": self.etag})
         if route == "log":
             self.revision += 1
             entry = {"id": f"e{self.revision}", "time": "2026-10-21T16:00:00Z"}

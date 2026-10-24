@@ -6,15 +6,17 @@ from datetime import timedelta
 import re
 
 DOMAIN = "nappi"
-VERSION = "0.1.1"
+VERSION = "0.2.0"
 
 API_BASE_URL = "https://api.nappi.app/v1"
 USER_AGENT = f"HomeAssistant-nappi/{VERSION}"
 KEYS_URL = "https://nappi.app/app/connections"
 
-# The API asks for no more than one poll a minute. Each poll costs two reads
-# (latest entries + timers) out of the key's 12 reads a minute.
-SCAN_INTERVAL = timedelta(minutes=1)
+# One read per poll (GET /status: timers and latest entries) out of the key's
+# 12 reads a minute. Two minutes keeps the server cost per baby low; changes
+# made from Home Assistant refresh at once, so only changes made elsewhere
+# (the phone, a watch, Alexa) can take up to two minutes to show.
+SCAN_INTERVAL = timedelta(minutes=2)
 
 KEY_PATTERN = re.compile(r"^nappi_[0-9a-f]{48}$")
 
