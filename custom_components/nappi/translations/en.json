@@ -76,6 +76,15 @@
       },
       "log_bottle": {
         "name": "Log bottle"
+      },
+      "start_nursing_left": {
+        "name": "Start nursing left"
+      },
+      "start_nursing_right": {
+        "name": "Start nursing right"
+      },
+      "start_nursing_both": {
+        "name": "Start nursing both"
       }
     },
     "number": {
