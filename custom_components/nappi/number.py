@@ -1,4 +1,4 @@
-"""Bottle amount used by the "Log bottle" button."""
+"""Amounts used by the "Log bottle" and "Log pumping" buttons."""
 
 from __future__ import annotations
 
@@ -27,18 +27,23 @@ async def async_setup_entry(
     async_add_entities: AddConfigEntryEntitiesCallback,
 ) -> None:
     unit = entry.options.get(CONF_BOTTLE_UNIT, DEFAULT_BOTTLE_UNIT)
-    async_add_entities([NappiBottleAmount(entry.runtime_data, unit)])
+    runtime = entry.runtime_data
+    async_add_entities([NappiAmount(runtime, "bottle_amount", unit), NappiAmount(runtime, "pumping_amount", unit)])
 
 
-class NappiBottleAmount(NappiEntity, RestoreNumber):
-    """How much the bottle button logs. Kept across restarts, local only."""
+class NappiAmount(NappiEntity, RestoreNumber):
+    """How much the bottle or pumping button logs. Kept across restarts, local only.
+
+    ``key`` is both the entity key and the NappiRuntimeData field the button reads.
+    """
 
     _attr_entity_category = EntityCategory.CONFIG
     _attr_mode = NumberMode.BOX
 
-    def __init__(self, runtime: NappiRuntimeData, unit: str) -> None:
-        super().__init__(runtime.coordinator, "bottle_amount")
+    def __init__(self, runtime: NappiRuntimeData, key: str, unit: str) -> None:
+        super().__init__(runtime.coordinator, key)
         self._runtime = runtime
+        self._key = key
         self._unit = UNIT_OZ if unit == UNIT_OZ else "ml"
         low, high, step, default = RANGES[self._unit]
         self._attr_native_min_value = low
@@ -62,9 +67,9 @@ class NappiBottleAmount(NappiEntity, RestoreNumber):
             and self.native_min_value <= last.native_value <= self.native_max_value
         ):
             self._attr_native_value = last.native_value
-        self._runtime.bottle_amount = self._attr_native_value
+        setattr(self._runtime, self._key, self._attr_native_value)
 
     async def async_set_native_value(self, value: float) -> None:
         self._attr_native_value = value
-        self._runtime.bottle_amount = value
+        setattr(self._runtime, self._key, value)
         self.async_write_ha_state()

@@ -4,10 +4,12 @@
       "diaper_wet": { "default": "mdi:water" },
       "diaper_dirty": { "default": "mdi:emoticon-poop" },
       "diaper_mixed": { "default": "mdi:water-plus" },
-      "log_bottle": { "default": "mdi:baby-bottle-outline" }
+      "log_bottle": { "default": "mdi:baby-bottle-outline" },
+      "log_pumping": { "default": "mdi:timer-outline" }
     },
     "number": {
-      "bottle_amount": { "default": "mdi:baby-bottle-outline" }
+      "bottle_amount": { "default": "mdi:baby-bottle-outline" },
+      "pumping_amount": { "default": "mdi:timer-outline" }
     },
     "select": {
       "bottle_contents": { "default": "mdi:baby-bottle" }

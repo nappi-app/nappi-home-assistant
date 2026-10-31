@@ -76,11 +76,17 @@
       },
       "log_bottle": {
         "name": "Fläschchen erfassen"
+      },
+      "log_pumping": {
+        "name": "Abpumpen erfassen"
       }
     },
     "number": {
       "bottle_amount": {
         "name": "Fläschchenmenge"
+      },
+      "pumping_amount": {
+        "name": "Abgepumpte Menge"
       }
     },
     "select": {
@@ -163,6 +169,9 @@
     },
     "no_bottle_amount": {
       "message": "Lege zuerst die Fläschchenmenge fest."
+    },
+    "no_pumping_amount": {
+      "message": "Lege zuerst die abgepumpte Menge fest."
     }
   },
   "issues": {

@@ -1,6 +1,6 @@
 # nappi for Home Assistant
 
-Log diapers and bottles, run sleep, nursing and pumping timers, and see the latest entries for your baby in Home Assistant. No YAML: install, paste a connection key, pick a baby.
+Log diapers, bottles and pumping, run sleep, nursing and pumping timers, and see the latest entries for your baby in Home Assistant. No YAML: install, paste a connection key, pick a baby.
 
 It uses the public nappi API (`https://api.nappi.app/v1`), which is part of nappi Premium and in beta.
 
@@ -13,6 +13,8 @@ One device per baby, with:
 | **Log wet diaper**, **Log dirty diaper**, **Log mixed diaper** (buttons) | Log a diaper change now. |
 | **Log bottle** (button) | Log a bottle of the **Bottle amount**, as **Bottle contents**. |
 | **Bottle amount** (number), **Bottle contents** (select) | Settings for the bottle button, kept across restarts. Milliliters by default; switch to ounces under *Configure*. |
+| **Log pumping** (button) | Log the **Pumping amount**. If the pumping timer is running, it stops the timer with that amount, so one entry has both the duration and the amount. With no timer running, it logs a separate entry. |
+| **Pumping amount** (number) | Setting for the pumping button, kept across restarts, in the same unit as the bottle amount. |
 | **Sleep timer**, **Nursing timer**, **Pumping timer** (switches) | On while that timer runs, whether it was started here, on a phone, a watch or Alexa. Turning one on starts the timer for the whole household; turning it off stops it and saves the entry, as stopping it on the phone would. Attributes: `started_at`, `paused`, `elapsed_seconds` (as of the last poll), and the nursing side. |
 | **Last sleep**, **Last nursing**, **Last bottle**, **Last diaper**, **Last pumping** (sensors) | When the newest entry of that type happened. Details such as the amount, side or diaper type are attributes. **Last sleep** is when the sleep ended; `start_time` is an attribute. |
 | **Last potty**, **Last solids**, **Last activity**, **Last growth measurement**, **Last medicine** (sensors) | The same for other types. Off by default; turn them on from the device page. |
