@@ -29,9 +29,11 @@ class NappiRuntimeData:
 
     coordinator: NappiCoordinator
     # The bottle button logs whatever the "Bottle amount" and "Bottle contents"
-    # entities hold. They write here so the button never reads entity state.
+    # entities hold, and the pumping button the "Pumping amount". They write
+    # here so the buttons never read entity state.
     bottle_amount: float | None = None
     bottle_type: str = BOTTLE_TYPE_UNSPECIFIED
+    pumping_amount: float | None = None
 
 
 type NappiConfigEntry = ConfigEntry[NappiRuntimeData]
