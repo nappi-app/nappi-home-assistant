@@ -76,6 +76,15 @@
       },
       "log_bottle": {
         "name": "Registrar mamadeira"
+      },
+      "start_nursing_left": {
+        "name": "Iniciar amamentação no lado esquerdo"
+      },
+      "start_nursing_right": {
+        "name": "Iniciar amamentação no lado direito"
+      },
+      "start_nursing_both": {
+        "name": "Iniciar amamentação nos dois lados"
       }
     },
     "number": {

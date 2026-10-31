@@ -76,6 +76,15 @@
       },
       "log_bottle": {
         "name": "Registrar biberón"
+      },
+      "start_nursing_left": {
+        "name": "Iniciar lactancia a la izquierda"
+      },
+      "start_nursing_right": {
+        "name": "Iniciar lactancia a la derecha"
+      },
+      "start_nursing_both": {
+        "name": "Iniciar lactancia en ambos lados"
       }
     },
     "number": {

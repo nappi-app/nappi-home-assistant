@@ -209,6 +209,50 @@ async def test_timer_switch_mirrors_and_controls_the_timer(
     assert len(nappi.calls_to("status")) == reads
 
 
+@pytest.mark.parametrize("side", ["left", "right", "both"])
+async def test_start_nursing_buttons_start_the_timer_on_that_side(
+    hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry, side: str
+) -> None:
+    reads = len(nappi.calls_to("status"))
+    await _press(hass, f"button.phoebe_start_nursing_{side}")
+
+    (call,) = nappi.calls_to("start:nursing")
+    assert call[2] == {"side": side}
+    nursing = hass.states.get("switch.phoebe_nursing_timer")
+    assert nursing.state == STATE_ON
+    assert nursing.attributes["side"] == side
+    # Like the switch, a start uses the server's answer instead of spending a read.
+    assert len(nappi.calls_to("status")) == reads
+
+
+async def test_start_nursing_button_while_nursing_keeps_the_running_timer(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    nappi.timers.append(
+        {
+            "type": "nursing",
+            "started_at": "2026-10-21T15:50:00Z",
+            "paused": False,
+            "elapsed_seconds": 600,
+            "side": "right",
+            "left_seconds": 0,
+            "right_seconds": 600,
+        }
+    )
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+
+    # The server ignores the new side, and so does the button: no error.
+    await _press(hass, "button.phoebe_start_nursing_left")
+
+    assert nappi.calls_to("start:nursing")[-1][2] == {"side": "left"}
+    nursing = hass.states.get("switch.phoebe_nursing_timer")
+    assert nursing.state == STATE_ON
+    assert nursing.attributes["side"] == "right"
+    assert nursing.attributes["right_seconds"] == 600
+    assert nursing.attributes["left_seconds"] == 0
+
+
 async def test_stopping_a_timer_someone_else_stopped(
     hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
 ) -> None:
