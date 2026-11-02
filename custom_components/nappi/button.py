@@ -1,4 +1,4 @@
-"""One-press logs: diapers, a bottle and pumping."""
+"""One-press actions: log diapers, a bottle and pumping, start nursing on a side."""
 
 from __future__ import annotations
 
@@ -13,16 +13,17 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import NappiConfigEntry, NappiRuntimeData
 from .api import NappiTimerNotRunningError
 from .const import BOTTLE_TYPE_UNSPECIFIED, CONF_BOTTLE_UNIT, DEFAULT_BOTTLE_UNIT, DOMAIN
-from .entity import NappiEntity, async_call_api
+from .entity import NappiEntity, async_call_api, async_start_timer
 
 PARALLEL_UPDATES = 1
 
 
 @dataclass(frozen=True, kw_only=True)
 class NappiButtonDescription(ButtonEntityDescription):
-    """A button that logs one entry."""
+    """A button that logs one entry, or starts nursing on one side."""
 
     diaper_type: str | None = None
+    nursing_side: str | None = None
     pumping: bool = False
 
 
@@ -32,6 +33,9 @@ BUTTONS: tuple[NappiButtonDescription, ...] = (
     NappiButtonDescription(key="diaper_mixed", diaper_type="mixed"),
     NappiButtonDescription(key="log_bottle"),
     NappiButtonDescription(key="log_pumping", pumping=True),
+    NappiButtonDescription(key="start_nursing_left", nursing_side="left"),
+    NappiButtonDescription(key="start_nursing_right", nursing_side="right"),
+    NappiButtonDescription(key="start_nursing_both", nursing_side="both"),
 )
 
 
@@ -46,7 +50,7 @@ async def async_setup_entry(
 
 
 class NappiLogButton(NappiEntity, ButtonEntity):
-    """Logs a diaper, a bottle or pumping when pressed."""
+    """Logs a diaper, a bottle or pumping, or starts nursing on a side, when pressed."""
 
     entity_description: NappiButtonDescription
 
@@ -97,6 +101,11 @@ class NappiLogButton(NappiEntity, ButtonEntity):
         coordinator = self.coordinator
         if self.entity_description.pumping:
             await self._log_pumping()
+            return
+        if side := self.entity_description.nursing_side:
+            # Nursing that already runs keeps its side and seconds: the server
+            # ignores the new side, and so do we.
+            await async_start_timer(coordinator, "nursing", {"side": side})
             return
         await async_call_api(coordinator, coordinator.client.async_log_entry(coordinator.baby_id, self._payload()))
         await coordinator.async_request_refresh()

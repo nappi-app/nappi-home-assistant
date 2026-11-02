@@ -77,6 +77,15 @@
       "log_bottle": {
         "name": "Fläschchen erfassen"
       },
+      "start_nursing_left": {
+        "name": "Stillen links starten"
+      },
+      "start_nursing_right": {
+        "name": "Stillen rechts starten"
+      },
+      "start_nursing_both": {
+        "name": "Stillen beidseitig starten"
+      },
       "log_pumping": {
         "name": "Abpumpen erfassen"
       }

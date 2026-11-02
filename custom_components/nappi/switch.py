@@ -12,7 +12,7 @@ from . import NappiConfigEntry
 from .api import NappiTimerNotRunningError
 from .const import TIMER_TYPES
 from .coordinator import NappiCoordinator
-from .entity import NappiEntity, async_call_api, without
+from .entity import NappiEntity, async_call_api, async_start_timer, without
 
 PARALLEL_UPDATES = 1
 
@@ -51,15 +51,7 @@ class NappiTimerSwitch(NappiEntity, SwitchEntity):
         return without(timer, "type")
 
     async def async_turn_on(self, **kwargs: Any) -> None:
-        coordinator = self.coordinator
-        result = await async_call_api(
-            coordinator, coordinator.client.async_start_timer(coordinator.baby_id, self._timer_type)
-        )
-        timer = result.get("timer")
-        if isinstance(timer, dict):
-            coordinator.set_timer(self._timer_type, timer)
-        else:
-            await coordinator.async_request_refresh()
+        await async_start_timer(self.coordinator, self._timer_type)
 
     async def async_turn_off(self, **kwargs: Any) -> None:
         coordinator = self.coordinator
