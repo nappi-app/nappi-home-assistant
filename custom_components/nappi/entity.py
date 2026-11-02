@@ -65,6 +65,20 @@ async def async_call_api[T](coordinator: NappiCoordinator, call: Awaitable[T]) -
         ) from err
 
 
+async def async_start_timer(
+    coordinator: NappiCoordinator, timer_type: str, body: dict[str, Any] | None = None
+) -> None:
+    """Start a timer and show it at once. One that already runs is shown as it is."""
+    result = await async_call_api(
+        coordinator, coordinator.client.async_start_timer(coordinator.baby_id, timer_type, body)
+    )
+    timer = result.get("timer")
+    if isinstance(timer, dict):
+        coordinator.set_timer(timer_type, timer)
+    else:
+        await coordinator.async_request_refresh()
+
+
 def without(entry: dict[str, Any], *keys: str) -> dict[str, Any]:
     """Copy an API object without the given keys."""
     return {k: v for k, v in entry.items() if k not in keys}

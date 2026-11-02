@@ -4,7 +4,10 @@
       "diaper_wet": { "default": "mdi:water" },
       "diaper_dirty": { "default": "mdi:emoticon-poop" },
       "diaper_mixed": { "default": "mdi:water-plus" },
-      "log_bottle": { "default": "mdi:baby-bottle-outline" }
+      "log_bottle": { "default": "mdi:baby-bottle-outline" },
+      "start_nursing_left": { "default": "mdi:mother-nurse" },
+      "start_nursing_right": { "default": "mdi:mother-nurse" },
+      "start_nursing_both": { "default": "mdi:mother-nurse" }
     },
     "number": {
       "bottle_amount": { "default": "mdi:baby-bottle-outline" }

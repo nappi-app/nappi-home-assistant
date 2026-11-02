@@ -76,6 +76,15 @@
       },
       "log_bottle": {
         "name": "Noter un biberon"
+      },
+      "start_nursing_left": {
+        "name": "Démarrer l'allaitement à gauche"
+      },
+      "start_nursing_right": {
+        "name": "Démarrer l'allaitement à droite"
+      },
+      "start_nursing_both": {
+        "name": "Démarrer l'allaitement des deux côtés"
       }
     },
     "number": {

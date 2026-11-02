@@ -158,6 +158,8 @@ class FakeNappi:
             if running:
                 return self._respond(method, url, 200, {"status": "already_running", "timer": running})
             timer = {"type": timer_type, "started_at": "2026-10-21T16:00:00Z", "paused": False, "elapsed_seconds": 0}
+            if timer_type == "nursing":
+                timer |= {"side": (data or {}).get("side"), "left_seconds": 0, "right_seconds": 0}
             self.timers.append(timer)
             return self._respond(method, url, 201, {"status": "started", "timer": timer})
         if running is None:

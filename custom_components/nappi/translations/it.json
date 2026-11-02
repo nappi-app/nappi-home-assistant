@@ -76,6 +76,15 @@
       },
       "log_bottle": {
         "name": "Registra biberon"
+      },
+      "start_nursing_left": {
+        "name": "Avvia allattamento a sinistra"
+      },
+      "start_nursing_right": {
+        "name": "Avvia allattamento a destra"
+      },
+      "start_nursing_both": {
+        "name": "Avvia allattamento da entrambi i lati"
       }
     },
     "number": {
