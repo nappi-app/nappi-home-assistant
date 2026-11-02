@@ -333,7 +333,8 @@ async def test_start_nursing_buttons_start_the_timer_on_that_side(
     assert call[2] == {"side": side}
     nursing = hass.states.get("switch.phoebe_nursing_timer")
     assert nursing.state == STATE_ON
-    assert nursing.attributes["side"] == side
+    # The API runs "both" with no current side.
+    assert nursing.attributes["side"] == (None if side == "both" else side)
     # Like the switch, a start uses the server's answer instead of spending a read.
     assert len(nappi.calls_to("status")) == reads
 
