@@ -85,11 +85,17 @@
       },
       "start_nursing_both": {
         "name": "Start nursing both"
+      },
+      "log_pumping": {
+        "name": "Log pumping"
       }
     },
     "number": {
       "bottle_amount": {
         "name": "Bottle amount"
+      },
+      "pumping_amount": {
+        "name": "Pumping amount"
       }
     },
     "select": {
@@ -172,6 +178,9 @@
     },
     "no_bottle_amount": {
       "message": "Set a bottle amount first."
+    },
+    "no_pumping_amount": {
+      "message": "Set a pumping amount first."
     }
   },
   "issues": {

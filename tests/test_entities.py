@@ -181,6 +181,119 @@ async def test_an_amount_saved_in_ml_is_not_reused_as_ounces(
     assert hass.states.get("number.phoebe_bottle_amount").state == "4"
 
 
+PUMPING_TIMER = {
+    "type": "pumping",
+    "started_at": "2026-10-21T15:40:00Z",
+    "paused": False,
+    "elapsed_seconds": 900,
+}
+
+
+async def test_pumping_button_logs_the_amount_when_no_timer_runs(
+    hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry
+) -> None:
+    await _press(hass, "button.phoebe_log_pumping")
+    assert nappi.calls_to("log")[-1][2] == {"type": "pumping", "amount": 120, "unit": "ml"}
+    assert nappi.calls_to("log")[-1][3]["Idempotency-Key"].startswith("ha-")
+
+    await hass.services.async_call(
+        NUMBER_DOMAIN, SERVICE_SET_VALUE, {ATTR_ENTITY_ID: "number.phoebe_pumping_amount", "value": 90}, blocking=True
+    )
+    await _press(hass, "button.phoebe_log_pumping")
+    assert nappi.calls_to("log")[-1][2] == {"type": "pumping", "amount": 90, "unit": "ml"}
+    # The sensor reflects the new entry without waiting for the next poll.
+    assert hass.states.get("sensor.phoebe_last_pumping").state != STATE_UNKNOWN
+
+
+async def test_pumping_in_ounces(hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry) -> None:
+    hass.config_entries.async_update_entry(config_entry, options={CONF_BOTTLE_UNIT: "oz"})
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    await _press(hass, "button.phoebe_log_pumping")
+    assert nappi.calls_to("log")[-1][2] == {"type": "pumping", "amount": 4, "unit": "oz"}
+
+
+async def test_pumping_button_stops_the_running_timer_with_the_amount(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    nappi.timers.append(dict(PUMPING_TIMER))
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.states.get("switch.phoebe_pumping_timer").state == STATE_ON
+
+    await _press(hass, "button.phoebe_log_pumping")
+
+    # One entry with the duration and the amount, not a second entry.
+    (stop,) = nappi.calls_to("stop:pumping")
+    assert stop[2] == {"amount": 120, "unit": "ml"}
+    assert not nappi.calls_to("log")
+    assert hass.states.get("switch.phoebe_pumping_timer").state == STATE_OFF
+
+
+async def test_pumping_button_stops_a_timer_started_since_the_last_poll(
+    hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry
+) -> None:
+    assert hass.states.get("switch.phoebe_pumping_timer").state == STATE_OFF
+    nappi.timers.append(dict(PUMPING_TIMER))  # Started on the phone since the last poll.
+
+    await _press(hass, "button.phoebe_log_pumping")
+
+    assert nappi.calls_to("stop:pumping")[-1][2] == {"amount": 120, "unit": "ml"}
+    assert not nappi.calls_to("log")
+
+
+async def test_pumping_button_logs_when_the_timer_was_stopped_elsewhere(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    nappi.timers.append(dict(PUMPING_TIMER))
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    nappi.timers.clear()  # Stopped on the phone since the last poll.
+
+    await _press(hass, "button.phoebe_log_pumping")
+
+    assert nappi.calls_to("log")[-1][2] == {"type": "pumping", "amount": 120, "unit": "ml"}
+    assert hass.states.get("switch.phoebe_pumping_timer").state == STATE_OFF
+
+
+async def test_pumping_button_needs_an_amount(
+    hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry
+) -> None:
+    setup_entry.runtime_data.pumping_amount = None
+    with pytest.raises(HomeAssistantError) as err:
+        await _press(hass, "button.phoebe_log_pumping")
+    assert err.value.translation_key == "no_pumping_amount"
+    assert not nappi.calls_to("log")
+    assert not nappi.calls_to("stop:pumping")
+
+
+async def test_pumping_amount_survives_a_restart(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    mock_restore_cache_with_extra_data(
+        hass,
+        [
+            (
+                State("number.phoebe_pumping_amount", "200"),
+                {
+                    "native_value": 200,
+                    "native_min_value": 5,
+                    "native_max_value": 500,
+                    "native_step": 5,
+                    "native_unit_of_measurement": "mL",
+                },
+            )
+        ],
+    )
+    assert await hass.config_entries.async_setup(config_entry.entry_id)
+    await hass.async_block_till_done()
+    assert hass.states.get("number.phoebe_pumping_amount").state == "200"
+    assert hass.states.get("number.phoebe_bottle_amount").state == "120"
+
+    await _press(hass, "button.phoebe_log_pumping")
+    assert nappi.calls_to("log")[-1][2] == {"type": "pumping", "amount": 200, "unit": "ml"}
+
+
 async def test_timer_switch_mirrors_and_controls_the_timer(
     hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
 ) -> None:

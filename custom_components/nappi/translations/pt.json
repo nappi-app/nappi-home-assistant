@@ -85,11 +85,17 @@
       },
       "start_nursing_both": {
         "name": "Iniciar amamentação nos dois lados"
+      },
+      "log_pumping": {
+        "name": "Registrar extração"
       }
     },
     "number": {
       "bottle_amount": {
         "name": "Quantidade da mamadeira"
+      },
+      "pumping_amount": {
+        "name": "Quantidade da extração"
       }
     },
     "select": {
@@ -172,6 +178,9 @@
     },
     "no_bottle_amount": {
       "message": "Defina primeiro a quantidade da mamadeira."
+    },
+    "no_pumping_amount": {
+      "message": "Defina primeiro a quantidade da extração."
     }
   },
   "issues": {
