@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Start nursing both"
       },
+      "switch_nursing_side": {
+        "name": "Switch nursing side"
+      },
       "log_pumping": {
         "name": "Log pumping"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Pumping timer"
+      },
+      "sleep_timer_paused": {
+        "name": "Sleep timer paused"
+      },
+      "nursing_timer_paused": {
+        "name": "Nursing timer paused"
+      },
+      "pumping_timer_paused": {
+        "name": "Pumping timer paused"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Set a pumping amount first."
+    },
+    "timer_not_running": {
+      "message": "That timer isn't running right now."
+    },
+    "timer_changed": {
+      "message": "The timer changed on another device. Check it and try again."
+    },
+    "timer_has_no_side": {
+      "message": "This feed was started on both sides, so it can't switch sides. Stop it, or start the next feed on one side."
     }
   },
   "issues": {

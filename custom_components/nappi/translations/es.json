@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Iniciar lactancia en ambos lados"
       },
+      "switch_nursing_side": {
+        "name": "Cambiar lado de lactancia"
+      },
       "log_pumping": {
         "name": "Registrar extracción"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Temporizador de extracción"
+      },
+      "sleep_timer_paused": {
+        "name": "Temporizador de sueño en pausa"
+      },
+      "nursing_timer_paused": {
+        "name": "Temporizador de lactancia en pausa"
+      },
+      "pumping_timer_paused": {
+        "name": "Temporizador de extracción en pausa"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Primero define la cantidad de la extracción."
+    },
+    "timer_not_running": {
+      "message": "Ese temporizador no está corriendo ahora."
+    },
+    "timer_changed": {
+      "message": "El temporizador cambió en otro dispositivo. Revísalo e inténtalo de nuevo."
+    },
+    "timer_has_no_side": {
+      "message": "Esta toma se inició con ambos lados, así que no puede cambiar de lado. Detenla o inicia la próxima toma en un lado."
     }
   },
   "issues": {

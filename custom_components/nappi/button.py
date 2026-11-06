@@ -1,4 +1,4 @@
-"""One-press actions: log diapers, a bottle and pumping, start nursing on a side."""
+"""One-press actions: log diapers, a bottle and pumping, start nursing on a side, switch sides."""
 
 from __future__ import annotations
 
@@ -13,18 +13,19 @@ from homeassistant.helpers.entity_platform import AddConfigEntryEntitiesCallback
 from . import NappiConfigEntry, NappiRuntimeData
 from .api import NappiTimerNotRunningError
 from .const import BOTTLE_TYPE_UNSPECIFIED, CONF_BOTTLE_UNIT, DEFAULT_BOTTLE_UNIT, DOMAIN
-from .entity import NappiEntity, async_call_api, async_start_timer
+from .entity import NappiEntity, async_call_api, async_start_timer, async_timer_action
 
 PARALLEL_UPDATES = 1
 
 
 @dataclass(frozen=True, kw_only=True)
 class NappiButtonDescription(ButtonEntityDescription):
-    """A button that logs one entry, or starts nursing on one side."""
+    """A button that logs one entry, starts nursing on one side, or switches sides."""
 
     diaper_type: str | None = None
     nursing_side: str | None = None
     pumping: bool = False
+    switch_side: bool = False
 
 
 BUTTONS: tuple[NappiButtonDescription, ...] = (
@@ -36,6 +37,7 @@ BUTTONS: tuple[NappiButtonDescription, ...] = (
     NappiButtonDescription(key="start_nursing_left", nursing_side="left"),
     NappiButtonDescription(key="start_nursing_right", nursing_side="right"),
     NappiButtonDescription(key="start_nursing_both", nursing_side="both"),
+    NappiButtonDescription(key="switch_nursing_side", switch_side=True),
 )
 
 
@@ -97,8 +99,39 @@ class NappiLogButton(NappiEntity, ButtonEntity):
         coordinator.set_timer("pumping", None)
         await coordinator.async_request_refresh()
 
+    async def _switch_side(self) -> None:
+        coordinator = self.coordinator
+
+        def nursing() -> dict[str, Any] | None:
+            return coordinator.data.timers.get("nursing") if coordinator.data else None
+
+        timer = nursing()
+        if timer is None:
+            # The last poll can be two minutes old: a feed started on the
+            # phone since then is not in it yet.
+            await coordinator.async_refresh()
+            timer = nursing()
+        if timer is None:
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="timer_not_running")
+        side = timer.get("side")
+        if side not in ("left", "right"):
+            raise HomeAssistantError(translation_domain=DOMAIN, translation_key="timer_has_no_side")
+        # Only that feed: if it ended and another began, the server answers
+        # timer_changed instead of switching a feed we never saw. If the side
+        # changed on the phone since the poll, switching to it changes nothing.
+        await async_timer_action(
+            coordinator,
+            "nursing",
+            coordinator.client.async_switch_nursing_side(
+                coordinator.baby_id, "right" if side == "left" else "left", timer.get("id")
+            ),
+        )
+
     async def async_press(self) -> None:
         coordinator = self.coordinator
+        if self.entity_description.switch_side:
+            await self._switch_side()
+            return
         if self.entity_description.pumping:
             await self._log_pumping()
             return

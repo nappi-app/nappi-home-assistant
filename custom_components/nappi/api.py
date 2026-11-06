@@ -53,7 +53,15 @@ class NappiBabyNotFoundError(NappiError):
 
 
 class NappiTimerNotRunningError(NappiError):
-    """Stop was called but no timer of that type is running (409)."""
+    """No timer of that type is running (409 timer_not_running)."""
+
+
+class NappiTimerChangedError(NappiError):
+    """The timer_id sent is no longer the running timer (409 timer_changed)."""
+
+
+class NappiTimerHasNoSideError(NappiError):
+    """A nursing timer started on both sides can't pause, resume or switch (409 timer_has_no_side)."""
 
 
 @dataclass(slots=True)
@@ -151,6 +159,10 @@ class NappiClient:
             raise NappiBabyNotFoundError(message, code, status)
         if status == 409 and code == "timer_not_running":
             raise NappiTimerNotRunningError(message, code, status)
+        if status == 409 and code == "timer_changed":
+            raise NappiTimerChangedError(message, code, status)
+        if status == 409 and code == "timer_has_no_side":
+            raise NappiTimerHasNoSideError(message, code, status)
         if status >= 500:
             raise NappiConnectionError(message, code, status)
         raise NappiError(message, code, status)
@@ -215,4 +227,24 @@ class NappiClient:
     ) -> dict[str, Any]:
         """Stop a timer and save its entry."""
         _, result, _ = await self._request("POST", f"/babies/{baby_id}/timers/{timer_type}/stop", json=body or {})
+        return result or {}
+
+    async def async_pause_timer(self, baby_id: str, timer_type: str) -> dict[str, Any]:
+        """Pause whichever timer of this type is running. The server records the time."""
+        _, result, _ = await self._request("POST", f"/babies/{baby_id}/timers/{timer_type}/pause", json={})
+        return result or {}
+
+    async def async_resume_timer(self, baby_id: str, timer_type: str) -> dict[str, Any]:
+        """Resume whichever timer of this type is paused."""
+        _, result, _ = await self._request("POST", f"/babies/{baby_id}/timers/{timer_type}/resume", json={})
+        return result or {}
+
+    async def async_switch_nursing_side(
+        self, baby_id: str, side: str, timer_id: str | None = None
+    ) -> dict[str, Any]:
+        """Move the running feed to ``side``. With ``timer_id``, only if that feed is still the one running."""
+        body: dict[str, Any] = {"side": side}
+        if timer_id:
+            body["timer_id"] = timer_id
+        _, result, _ = await self._request("POST", f"/babies/{baby_id}/timers/nursing/switch", json=body)
         return result or {}

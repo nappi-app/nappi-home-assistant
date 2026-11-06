@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Iniciar amamentação nos dois lados"
       },
+      "switch_nursing_side": {
+        "name": "Trocar lado da amamentação"
+      },
       "log_pumping": {
         "name": "Registrar extração"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Cronômetro de extração"
+      },
+      "sleep_timer_paused": {
+        "name": "Cronômetro de sono pausado"
+      },
+      "nursing_timer_paused": {
+        "name": "Cronômetro de amamentação pausado"
+      },
+      "pumping_timer_paused": {
+        "name": "Cronômetro de extração pausado"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Defina primeiro a quantidade da extração."
+    },
+    "timer_not_running": {
+      "message": "Esse cronômetro não está rodando agora."
+    },
+    "timer_changed": {
+      "message": "O cronômetro mudou em outro dispositivo. Confira e tente de novo."
+    },
+    "timer_has_no_side": {
+      "message": "Esta mamada começou com os dois lados, então não dá para trocar de lado. Pare a mamada ou comece a próxima em um lado."
     }
   },
   "issues": {

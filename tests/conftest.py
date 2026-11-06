@@ -52,6 +52,7 @@ LATEST = {
 }
 
 SLEEP_TIMER = {
+    "id": "aaaaaaaa-0000-4000-8000-000000000001",
     "type": "sleep",
     "started_at": "2026-10-21T15:00:00Z",
     "paused": False,
@@ -122,6 +123,29 @@ class FakeNappi:
     def _respond(self, method: str, url: URL, status: int, body: Any = None, headers: dict[str, str] | None = None):
         return AiohttpClientMockResponse(method, url, status=status, json=body, headers=headers)
 
+    def _timer_action(self, method: str, url: URL, action: str, running: dict[str, Any], data: dict[str, Any]):
+        """Pause, resume and switch, with the server's statuses and conflicts."""
+
+        def conflict(code: str):
+            return self._respond(method, url, 409, {"error": {"code": code, "message": code}})
+
+        if data.get("timer_id") and data["timer_id"] != running.get("id"):
+            return conflict("timer_changed")
+        if running["type"] == "nursing" and running.get("side") is None:
+            return conflict("timer_has_no_side")
+        if action == "pause":
+            status = "already_paused" if running["paused"] else "paused"
+            running["paused"] = True
+        elif action == "resume":
+            status = "resumed" if running["paused"] else "already_running"
+            running["paused"] = False
+        else:
+            changed = running["paused"] or running["side"] != data["side"]
+            status = "switched" if changed else "already_on_side"
+            running["side"] = data["side"]
+            running["paused"] = False
+        return self._respond(method, url, 200, {"status": status, "timer": running})
+
     async def _handle(self, method: str, url: URL, data: Any) -> AiohttpClientMockResponse:
         headers = dict(self.mocker.mock_calls[-1][3] or {})
         route = self._route(method.upper(), url.path)
@@ -157,7 +181,13 @@ class FakeNappi:
         if action == "start":
             if running:
                 return self._respond(method, url, 200, {"status": "already_running", "timer": running})
-            timer = {"type": timer_type, "started_at": "2026-10-21T16:00:00Z", "paused": False, "elapsed_seconds": 0}
+            timer = {
+                "id": f"bbbbbbbb-0000-4000-8000-{len(self.calls):012d}",
+                "type": timer_type,
+                "started_at": "2026-10-21T16:00:00Z",
+                "paused": False,
+                "elapsed_seconds": 0,
+            }
             if timer_type == "nursing":
                 # Like the API: "both" runs with no current side.
                 side = (data or {}).get("side")
@@ -166,6 +196,8 @@ class FakeNappi:
             return self._respond(method, url, 201, {"status": "started", "timer": timer})
         if running is None:
             return self._respond(method, url, 409, {"error": {"code": "timer_not_running", "message": "no"}})
+        if action in ("pause", "resume", "switch"):
+            return self._timer_action(method, url, action, running, data or {})
         self.timers.remove(running)
         self.revision += 1
         return self._respond(

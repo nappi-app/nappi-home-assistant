@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Stillen beidseitig starten"
       },
+      "switch_nursing_side": {
+        "name": "Stillseite wechseln"
+      },
       "log_pumping": {
         "name": "Abpumpen erfassen"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Abpump-Timer"
+      },
+      "sleep_timer_paused": {
+        "name": "Schlaf-Timer pausiert"
+      },
+      "nursing_timer_paused": {
+        "name": "Still-Timer pausiert"
+      },
+      "pumping_timer_paused": {
+        "name": "Abpump-Timer pausiert"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Lege zuerst die abgepumpte Menge fest."
+    },
+    "timer_not_running": {
+      "message": "Dieser Timer läuft gerade nicht."
+    },
+    "timer_changed": {
+      "message": "Der Timer wurde auf einem anderen Gerät geändert. Prüfe ihn und versuche es noch einmal."
+    },
+    "timer_has_no_side": {
+      "message": "Diese Stillmahlzeit wurde mit beiden Seiten gestartet, deshalb kann sie die Seite nicht wechseln. Stoppe sie oder starte die nächste auf einer Seite."
     }
   },
   "issues": {

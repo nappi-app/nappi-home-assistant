@@ -6,7 +6,7 @@ from datetime import timedelta
 import re
 
 DOMAIN = "nappi"
-VERSION = "0.3.0"
+VERSION = "0.4.0"
 
 API_BASE_URL = "https://api.nappi.app/v1"
 USER_AGENT = f"HomeAssistant-nappi/{VERSION}"

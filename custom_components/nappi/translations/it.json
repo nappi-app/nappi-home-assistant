@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Avvia allattamento da entrambi i lati"
       },
+      "switch_nursing_side": {
+        "name": "Cambia lato dell'allattamento"
+      },
       "log_pumping": {
         "name": "Registra tiralatte"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Timer del tiralatte"
+      },
+      "sleep_timer_paused": {
+        "name": "Timer del sonno in pausa"
+      },
+      "nursing_timer_paused": {
+        "name": "Timer dell'allattamento in pausa"
+      },
+      "pumping_timer_paused": {
+        "name": "Timer del tiralatte in pausa"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Imposta prima la quantità del tiralatte."
+    },
+    "timer_not_running": {
+      "message": "Quel timer non è in corso adesso."
+    },
+    "timer_changed": {
+      "message": "Il timer è cambiato su un altro dispositivo. Controllalo e riprova."
+    },
+    "timer_has_no_side": {
+      "message": "Questa poppata è iniziata su entrambi i lati, quindi non può cambiare lato. Fermala o avvia la prossima poppata su un lato."
     }
   },
   "issues": {

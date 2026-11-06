@@ -15,6 +15,9 @@ from .api import (
     NappiError,
     NappiPremiumRequiredError,
     NappiRateLimitedError,
+    NappiTimerChangedError,
+    NappiTimerHasNoSideError,
+    NappiTimerNotRunningError,
 )
 from .const import DOMAIN, KEYS_URL, VERSION
 from .coordinator import NappiCoordinator
@@ -57,6 +60,12 @@ async def async_call_api[T](coordinator: NappiCoordinator, call: Awaitable[T]) -
             translation_key="rate_limited",
             translation_placeholders={"seconds": str(err.retry_after)},
         ) from err
+    except NappiTimerNotRunningError as err:
+        raise HomeAssistantError(translation_domain=DOMAIN, translation_key="timer_not_running") from err
+    except NappiTimerChangedError as err:
+        raise HomeAssistantError(translation_domain=DOMAIN, translation_key="timer_changed") from err
+    except NappiTimerHasNoSideError as err:
+        raise HomeAssistantError(translation_domain=DOMAIN, translation_key="timer_has_no_side") from err
     except NappiError as err:
         raise HomeAssistantError(
             translation_domain=DOMAIN,
@@ -72,6 +81,35 @@ async def async_start_timer(
     result = await async_call_api(
         coordinator, coordinator.client.async_start_timer(coordinator.baby_id, timer_type, body)
     )
+    timer = result.get("timer")
+    if isinstance(timer, dict):
+        coordinator.set_timer(timer_type, timer)
+    else:
+        await coordinator.async_request_refresh()
+
+
+async def async_timer_action(
+    coordinator: NappiCoordinator, timer_type: str, call: Awaitable[dict[str, Any]]
+) -> None:
+    """Pause, resume or switch a timer and show the result at once.
+
+    The server records the time and returns the timer as it now is, so Home
+    Assistant never sends its own clock or durations.
+    """
+
+    async def run() -> dict[str, Any]:
+        try:
+            return await call
+        except NappiTimerNotRunningError:
+            # Stopped elsewhere since the last poll.
+            coordinator.set_timer(timer_type, None)
+            raise
+        except NappiTimerChangedError:
+            # A new timer replaced the one we knew; show it before the retry.
+            await coordinator.async_request_refresh()
+            raise
+
+    result = await async_call_api(coordinator, run())
     timer = result.get("timer")
     if isinstance(timer, dict):
         coordinator.set_timer(timer_type, timer)

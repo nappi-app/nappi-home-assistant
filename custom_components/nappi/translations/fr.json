@@ -86,6 +86,9 @@
       "start_nursing_both": {
         "name": "Démarrer l'allaitement des deux côtés"
       },
+      "switch_nursing_side": {
+        "name": "Changer de sein"
+      },
       "log_pumping": {
         "name": "Noter une séance de tire-lait"
       }
@@ -154,6 +157,15 @@
       },
       "pumping_timer": {
         "name": "Minuteur de tire-lait"
+      },
+      "sleep_timer_paused": {
+        "name": "Minuteur de sommeil en pause"
+      },
+      "nursing_timer_paused": {
+        "name": "Minuteur d'allaitement en pause"
+      },
+      "pumping_timer_paused": {
+        "name": "Minuteur de tire-lait en pause"
       }
     }
   },
@@ -181,6 +193,15 @@
     },
     "no_pumping_amount": {
       "message": "Définis d'abord la quantité du tire-lait."
+    },
+    "timer_not_running": {
+      "message": "Ce minuteur ne tourne pas en ce moment."
+    },
+    "timer_changed": {
+      "message": "Le minuteur a changé sur un autre appareil. Vérifie-le et réessaie."
+    },
+    "timer_has_no_side": {
+      "message": "Cette tétée a commencé des deux côtés, donc elle ne peut pas changer de sein. Arrête-la ou commence la prochaine tétée d'un seul côté."
     }
   },
   "issues": {

@@ -8,7 +8,8 @@
       "log_pumping": { "default": "mdi:timer-outline" },
       "start_nursing_left": { "default": "mdi:mother-nurse" },
       "start_nursing_right": { "default": "mdi:mother-nurse" },
-      "start_nursing_both": { "default": "mdi:mother-nurse" }
+      "start_nursing_both": { "default": "mdi:mother-nurse" },
+      "switch_nursing_side": { "default": "mdi:swap-horizontal" }
     },
     "number": {
       "bottle_amount": { "default": "mdi:baby-bottle-outline" },
@@ -20,7 +21,10 @@
     "switch": {
       "sleep_timer": { "default": "mdi:sleep-off", "state": { "on": "mdi:sleep" } },
       "nursing_timer": { "default": "mdi:mother-nurse" },
-      "pumping_timer": { "default": "mdi:timer-outline", "state": { "on": "mdi:timer" } }
+      "pumping_timer": { "default": "mdi:timer-outline", "state": { "on": "mdi:timer" } },
+      "sleep_timer_paused": { "default": "mdi:play", "state": { "on": "mdi:pause" } },
+      "nursing_timer_paused": { "default": "mdi:play", "state": { "on": "mdi:pause" } },
+      "pumping_timer_paused": { "default": "mdi:play", "state": { "on": "mdi:pause" } }
     },
     "sensor": {
       "last_sleep": { "default": "mdi:sleep" },

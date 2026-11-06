@@ -428,3 +428,126 @@ async def test_each_press_gets_its_own_idempotency_key(
     await _press(hass, "button.phoebe_log_wet_diaper")
     first, second = nappi.calls_to("log")
     assert first[3]["Idempotency-Key"] != second[3]["Idempotency-Key"]
+
+
+NURSING_TIMER = {
+    "id": "cccccccc-0000-4000-8000-000000000001",
+    "type": "nursing",
+    "started_at": "2026-10-21T15:50:00Z",
+    "paused": False,
+    "elapsed_seconds": 600,
+    "side": "left",
+    "left_seconds": 600,
+    "right_seconds": 0,
+}
+
+
+async def _setup_with(hass: HomeAssistant, nappi: FakeNappi, entry: MockConfigEntry, *timers: dict) -> None:
+    nappi.timers.extend(dict(t) for t in timers)
+    assert await hass.config_entries.async_setup(entry.entry_id)
+    await hass.async_block_till_done()
+
+
+async def _switch(hass: HomeAssistant, service: str, entity_id: str) -> None:
+    await hass.services.async_call(SWITCH_DOMAIN, service, {ATTR_ENTITY_ID: entity_id}, blocking=True)
+
+
+async def test_switch_side_button_moves_the_feed_to_the_other_side(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    await _setup_with(hass, nappi, config_entry, NURSING_TIMER)
+    reads = len(nappi.calls_to("status"))
+
+    await _press(hass, "button.phoebe_switch_nursing_side")
+
+    # Only the side and the feed it applies to: the server keeps the time.
+    (call,) = nappi.calls_to("switch:nursing")
+    assert call[2] == {"side": "right", "timer_id": NURSING_TIMER["id"]}
+    assert hass.states.get("switch.phoebe_nursing_timer").attributes["side"] == "right"
+    assert len(nappi.calls_to("status")) == reads
+
+    await _press(hass, "button.phoebe_switch_nursing_side")
+    assert nappi.calls_to("switch:nursing")[-1][2]["side"] == "left"
+    assert hass.states.get("switch.phoebe_nursing_timer").attributes["side"] == "left"
+
+
+async def test_switch_side_finds_a_feed_started_since_the_last_poll(
+    hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry
+) -> None:
+    nappi.timers.append(dict(NURSING_TIMER, side="right"))  # Started on the phone.
+    await _press(hass, "button.phoebe_switch_nursing_side")
+    assert nappi.calls_to("switch:nursing")[-1][2]["side"] == "left"
+
+
+async def test_switch_side_without_a_feed(hass: HomeAssistant, nappi: FakeNappi, setup_entry: MockConfigEntry) -> None:
+    with pytest.raises(HomeAssistantError) as err:
+        await _press(hass, "button.phoebe_switch_nursing_side")
+    assert err.value.translation_key == "timer_not_running"
+    assert not nappi.calls_to("switch:nursing")
+
+
+async def test_switch_side_on_a_feed_started_on_both_sides(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    await _setup_with(hass, nappi, config_entry, dict(NURSING_TIMER, side=None))
+    with pytest.raises(HomeAssistantError) as err:
+        await _press(hass, "button.phoebe_switch_nursing_side")
+    assert err.value.translation_key == "timer_has_no_side"
+    assert not nappi.calls_to("switch:nursing")
+
+
+async def test_switch_side_never_switches_a_feed_it_did_not_see(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    await _setup_with(hass, nappi, config_entry, NURSING_TIMER)
+    # That feed ended on the phone and a new one began on the right.
+    nappi.timers[0] = dict(NURSING_TIMER, id="cccccccc-0000-4000-8000-000000000002", side="right")
+
+    with pytest.raises(HomeAssistantError) as err:
+        await _press(hass, "button.phoebe_switch_nursing_side")
+    assert err.value.translation_key == "timer_changed"
+    await hass.async_block_till_done()
+    assert nappi.timers[0]["side"] == "right"
+    # The new feed is shown, so the next press works on it.
+    assert hass.states.get("switch.phoebe_nursing_timer").attributes["id"] == "cccccccc-0000-4000-8000-000000000002"
+
+
+async def test_paused_switch_pauses_and_resumes_the_timer(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    await _setup_with(hass, nappi, config_entry, NURSING_TIMER)
+    paused = "switch.phoebe_nursing_timer_paused"
+    assert hass.states.get(paused).state == STATE_OFF
+
+    await _switch(hass, SERVICE_TURN_ON, paused)
+    assert nappi.calls_to("pause:nursing")[-1][2] == {}
+    assert hass.states.get(paused).state == STATE_ON
+    # Paused is still running as far as the timer switch is concerned.
+    assert hass.states.get("switch.phoebe_nursing_timer").state == STATE_ON
+
+    await _switch(hass, SERVICE_TURN_OFF, paused)
+    assert len(nappi.calls_to("resume:nursing")) == 1
+    assert hass.states.get(paused).state == STATE_OFF
+
+
+async def test_pausing_a_timer_stopped_elsewhere(
+    hass: HomeAssistant, nappi: FakeNappi, config_entry: MockConfigEntry
+) -> None:
+    await _setup_with(hass, nappi, config_entry, NURSING_TIMER)
+    nappi.timers.clear()  # Stopped on the phone since the last poll.
+
+    with pytest.raises(HomeAssistantError) as err:
+        await _switch(hass, SERVICE_TURN_ON, "switch.phoebe_nursing_timer_paused")
+    assert err.value.translation_key == "timer_not_running"
+    assert hass.states.get("switch.phoebe_nursing_timer").state == STATE_OFF
+
+
+async def test_sleep_and_pumping_pause_switches_start_disabled(
+    hass: HomeAssistant, setup_entry: MockConfigEntry
+) -> None:
+    registry = er.async_get(hass)
+    assert registry.async_get("switch.phoebe_nursing_timer_paused").disabled_by is None
+    for timer_type in ("sleep", "pumping"):
+        entry = registry.async_get(f"switch.phoebe_{timer_type}_timer_paused")
+        assert entry is not None
+        assert entry.disabled_by is er.RegistryEntryDisabler.INTEGRATION
